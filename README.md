@@ -12,6 +12,10 @@ Open `client/src/App.js` and put the APP_ID in there.
 
 *Remember to add localhost to your app's CORS origins.
 
+### Setup a connection to Postgresql:
+
+Establish connection to your Postgres Database by replaceing the `connectionString` in `server.js`.
+
 ### Run the command:
 
 ```
