@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import "./App.css";
 import explosion from "./explosion.mp3";
+import rockAudio from "./rock.m4a";
 import warning from "./warning.png";
 import { gql } from "apollo-boost";
 import { ApolloProvider, Query } from "react-apollo";
@@ -35,6 +36,12 @@ class GetEmails extends Component {
     if (this.state.isLoading) {
       //setInterval(() => this.loadData(), 1000);
     }
+    // this.loadData();
+    //Cheating here to see if this will process after logins
+    setTimeout(() => {
+      console.log("how about here?");
+      this.loadData();
+    }, 3000);
     this.loadData();
   }
 
@@ -54,8 +61,8 @@ class GetEmails extends Component {
 
   handleClick() {
     console.log("clicked");
-    var x = document.getElementById("myAudio");
-    x.play();
+    var explosion = document.getElementById("myAudio");
+    explosion.play();
     document
       .getElementsByClassName("App-main")[0]
       .classList.add("shake-hard", "shake-constant");
@@ -69,6 +76,7 @@ class GetEmails extends Component {
   }
 
   loadData = async () => {
+    console.log("process here");
     const response = await fetch("/process");
     const body = await response.json();
     this.setState({ totalNum: body[0].count });
@@ -92,6 +100,7 @@ class GetEmails extends Component {
   };
 
   render() {
+    console.log("how about here?");
     return (
       <div>
         <header className="App-main">
@@ -205,11 +214,18 @@ class App extends Component {
     super(props);
     this.state = {
       gmail: false,
-      email: null
+      email: null,
+      isNuclear: true
     };
     this.isLoggedIn("gmail");
   }
-
+  componentDidMount() {
+    if (this.state.isNuclear) {
+      const rockAudio = document.getElementById("rock");
+      rockAudio.loop = true;
+      rockAudio.play();
+    }
+  }
   callLogin = async (token, data) => {
     console.log("calllogin");
     const email = data.me.gmail.email;
@@ -319,8 +335,12 @@ class App extends Component {
   }
   render() {
     return (
-      <div className="App">
-        {this.state.gmail
+      <div className={this.state.isNuclear ? "App-nuclear" : "App"}>
+        <audio id="rock">
+          <source src={rockAudio} type="audio/mpeg" />
+        </audio>
+        {//this.state.gmail
+        true
           ? <GetEmails email={this.state.email} />
           : <div>
               <div className="App-login">

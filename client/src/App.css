@@ -1,4 +1,5 @@
-.App {
+.App,
+.App-nuclear {
   text-align: center;
 }
 .App-main,
@@ -74,36 +75,36 @@
 }
 
 /* Nuclear Version!!!!!!!!!!!!!!!!!!!*/
-body {
+.App-nuclear {
   font-family: "Comic Sans MS";
 }
-.App-main,
-.App-login {
+.App-nuclear .App-main,
+.App-nuclear .App-login {
   background-color: #222;
   height: 100vh;
   padding: 20px;
   color: white;
 }
-.App-main.shake-hard.shake-constant {
+.App-nuclear .App-main.shake-hard.shake-constant {
   width: 100%;
 }
-.App-title {
+.App-nuclear .App-title {
   font-size: 6rem;
 }
-.App-title .yellow {
+.App-nuclear .App-title .yellow {
   color: yellow;
 }
-.App-title .red {
+.App-nuclear .App-title .red {
   color: red;
 }
-.marquee {
+.App-nuclear .marquee {
   height: 150px;
   width: 100%;
   overflow: hidden;
   position: relative;
 }
 
-.marquee h1 {
+.App-nuclear .marquee h1 {
   display: block;
   width: 200%;
   position: absolute;
@@ -119,11 +120,11 @@ body {
     left: -100%;
   }
 }
-.progress-bar.progress-bar-striped.progress-bar-animated {
+.App-nuclear .progress-bar.progress-bar-striped.progress-bar-animated {
   background-color: #3fb53f;
   color: #fff;
 }
-#unsubscribebtn {
+.App-nuclear #unsubscribebtn {
   background-color: red;
   color: white;
   border-radius: 30px;
@@ -134,15 +135,15 @@ body {
   -webkit-transition: all 0.5s;
   transition: all 0.5s;
 }
-#unsubscribebtn:focus {
+.App-nuclear #unsubscribebtn:focus {
   outline: 0;
 }
 
-#unsubscribebtn:hover {
+.App-nuclear #unsubscribebtn:hover {
   color: white;
   font-size: 3.5rem;
   background-color: red;
 }
-#unsubscribebtn:active {
+.App-nuclear #unsubscribebtn:active {
   background-color: red;
 }
