@@ -2,27 +2,60 @@
   text-align: center;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
-}
-
-.App-header {
+.App-main,
+.App-login {
   background-color: #222;
-  height: 150px;
+  height: 100vh;
   padding: 20px;
   color: white;
 }
-
 .App-title {
-  font-size: 1.5em;
+  font-size: 1.8em;
 }
 
-.App-intro {
-  font-size: large;
+/*Buttons*/
+.loginbtn {
+  border-radius: 3px;
+  border: none;
+  box-shadow: rgba(0, 0, 0, 0.5) 0px 1px 2px;
+  color: rgb(255, 255, 255);
+  cursor: pointer;
+  font-size: 19px;
+  margin: 5px;
+  overflow: hidden;
+  padding: 0px 10px;
+  user-select: none;
+  height: 50px;
+  margin-top: 20px;
+}
+.loginbtn-google-plus-g {
+  background: #cf4332;
+}
+.loginbtn-google-plus-g:hover {
+  background: #b13526;
 }
 
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+.unsubscribebtn {
+  background-color: red;
+  color: white;
+  border-radius: 30px;
+  font-size: 1.5rem;
+  margin-top: 40px;
+  border: none;
+  padding: 10px 20px;
+  -webkit-transition: all 0.5s;
+  transition: all 0.5s;
 }
+.unsubscribebtn:focus {
+  outline: 0;
+}
+
+.unsubscribebtn:hover {
+  color: white;
+  font-size: 3.5rem;
+}
+/*
+.loaded-emails {
+  font-size: 3rem;
+  text-decoration: underline;
+}*/

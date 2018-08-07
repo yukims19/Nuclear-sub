@@ -76,20 +76,23 @@ class GetEmails extends Component {
   render() {
     return (
       <div>
-        <header className="App-header">
+        <header className="App-main">
           <h1 className="App-title">Welcome to Nuclear-sub</h1>
-          <p>
-            {" "}{this.state.totalNum} loaded
+          <p className="loaded-emails">
+            {" "}{this.state.totalNum} emails loaded
           </p>
           <p>
-            {" "}{this.state.cursor} unsubscribed
+            Unsubscribed {this.state.cursor}
           </p>
+          {this.state.isLoading
+            ? "loading"
+            : <button
+                className="unsubscribebtn"
+                onClick={() => this.handleClick()}
+              >
+                Unsubscribe All
+              </button>}
         </header>
-        {this.state.isLoading
-          ? "loading"
-          : <button className="get-emails" onClick={() => this.handleClick()}>
-              Unsubscribe Emails
-            </button>}
       </div>
     );
   }
@@ -133,11 +136,11 @@ class LoginButton extends Component {
   render() {
     return (
       <button
-        className={"loginbtn loginbtn-" + this.props.eventClass}
+        className={"loginbtn loginbtn-google-plus-g"}
         onClick={this.props.onClick}
       >
-        <i className={"fab fa-" + this.props.eventClass} />
-        <span> </span>Login with {this.props.event}
+        <i className={"fab fa-google-plus-g"} />
+        <span> </span>Login with {" " + this.props.event}
       </button>
     );
   }
@@ -266,9 +269,12 @@ class App extends Component {
         {this.state.gmail
           ? <GetEmails email={this.state.email} />
           : <div>
-              <div className="login-background">Nuclear-sub</div>
-              <div className="login-eventilbtn">
-                {this.renderButton("Gmail", "gmail")}
+              <div className="App-login">
+                <h1 className="App-title">Welcome to Nuclear-sub</h1>
+                <p>Unsubscribe your emails!</p>
+                <div className="login-google-plus-g">
+                  {this.renderButton("Gmail", "gmail")}
+                </div>
               </div>
             </div>}
       </div>
