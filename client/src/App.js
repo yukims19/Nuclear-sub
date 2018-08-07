@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import "./App.css";
+import explosion from "./explosion.mp3";
 import { gql } from "apollo-boost";
 import { ApolloProvider, Query } from "react-apollo";
 import OneGraphApolloClient from "onegraph-apollo-client";
@@ -46,6 +47,8 @@ class GetEmails extends Component {
 
   handleClick() {
     console.log("clicked");
+    var x = document.getElementById("myAudio");
+    x.play();
     //setInterval(() => this.unsubscribeAll(this.state.cursor), 1000);
     this.unsubscribeAll(this.state.cursor);
   }
@@ -77,6 +80,9 @@ class GetEmails extends Component {
     return (
       <div>
         <header className="App-main">
+          <audio id="myAudio">
+            <source src={explosion} type="audio/mpeg" />
+          </audio>
           <h1 className="App-title">Welcome to Nuclear-sub</h1>
           <p className="loaded-emails">
             {" "}{this.state.totalNum} emails loaded
