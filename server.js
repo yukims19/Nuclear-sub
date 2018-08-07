@@ -7,17 +7,17 @@ app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 const port = process.env.PORT || 5000;
 const { Client } = require("pg");
 const escape = require("pg-escape");
+const fetch = require("node-fetch");
 
 const connectionString =
-  "postgres://someuser:somepassword@somehost:381/somedatabase";
+//  "postgres://someuser:somepassword@somehost:381/somedatabase";
 
 const client = new Client({ connectionString: connectionString });
 client.connect();
 
 app.post("/emails", (req, res) => {
-  const token = req.body.token;
+  console.log("Got you emails");
   const data = req.body.data;
-  console.log("======================================================");
   const values = data.map(e => {
     const subject = e.expanded.messages[0].payload.subject;
     const from = e.expanded.messages[0].payload.from;
@@ -27,11 +27,7 @@ app.post("/emails", (req, res) => {
     return "('" + subject + "', '" + from + "', '" + to + "', '" + url + "')";
   });
   const sqlValues = values.join(", ");
-  console.log("======================================================");
-  console.log(sqlValues);
   const sql = escape("INSERT INTO emails values %s", sqlValues);
-  console.log("======================================================");
-  console.log(sql);
   client.query(sql, (error, response) => {
     console.log(error, response);
     res.send(response);
@@ -56,15 +52,40 @@ app.post("/login", (req, res) => {
   });
 });
 
-app.get("/users", (req, res) => {
-  /*var sql = "SELECT * FROM people";
+app.post("/unsubscribe", (req, res) => {
+  console.log("unsubscribing");
+  const cursor = req.body.cursor;
+  const sql = escape("SELECT url FROM emails WHERE id > %s limit 2;", cursor);
+  client
+    .query(sql)
+    .then(response => {
+      const resData = response.rows;
+      console.log(resData);
+      resData.forEach(e => {
+        fetch(e.url)
+          .then(res => {
+            res;
+            console.log(res.status);
+          })
+          .catch(error => {
+            console.log(error);
+            error;
+          });
+      });
+      res.send(resData);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+});
+
+app.get("/process", (req, res) => {
+  var sql = "SELECT count(*) FROM emails";
   let resData;
   client.query(sql, (error, response) => {
-    //console.log(err, res);
     resData = response.rows;
     res.send(resData);
-  });*/
-  res.send({ name: "yuki" });
+  });
 });
 
 app.listen(port, function() {
