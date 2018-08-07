@@ -12,7 +12,17 @@
 .App-title {
   font-size: 1.8em;
 }
-
+.card-footer {
+  position: fixed;
+  bottom: 0px;
+  width: 100%;
+  background-color: #505356;
+  color: #cfcfcf;
+  cursor: default;
+}
+.card-footer i {
+  color: red;
+}
 /*Buttons*/
 .loginbtn {
   border-radius: 3px;

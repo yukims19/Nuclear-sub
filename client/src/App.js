@@ -277,6 +277,9 @@ class App extends Component {
                 </div>
               </div>
             </div>}
+        <div className="card-footer">
+          Made with <i className="fas fa-heart" /> By Youxi Li on OneGraph
+        </div>
       </div>
     );
   }
