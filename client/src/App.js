@@ -15,14 +15,62 @@ const client = new OneGraphApolloClient({
 });
 
 class GetEmails extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      totalNum: 0,
+      isLoading: true
+    };
+  }
+  componentDidMount() {
+    console.log("ppppppppppppppppppppppp");
+    console.log(this.state.isLoading);
+    if (this.state.isLoading) {
+      setInterval(() => this.loadData(), 1000);
+    }
+    this.loadData();
+  }
+
+  componentDidUpdate(prevProps) {
+    console.log("zzzzzz");
+    if (this.state.isLoading) {
+      if (this.props.totalNum === prevProps.totalNum) {
+        this.setState({ isLoading: false });
+      }
+    }
+    if (!this.state.isLoading) {
+      if (this.props.totalNum !== prevProps.totalNum) {
+        this.setState({ isLoading: true });
+      }
+    }
+    console.log(this.state.isLoading);
+  }
+
   handleClick() {
     console.log("clicked");
   }
+
+  loadData = async () => {
+    console.log(this.props.email);
+    console.log("l");
+    const response = await fetch("/process");
+    const body = await response.json();
+    this.setState({ totalNum: body[0].count });
+    if (response.status !== 200) throw Error(body.message);
+    return body;
+  };
   render() {
     return (
-      <button className="get-emails" onClick={() => this.handleClick()}>
-        Get Emails
-      </button>
+      <div>
+        <p>
+          {" "}{this.state.totalNum} loaded
+        </p>
+        {this.state.isLoading
+          ? "loading"
+          : <button className="get-emails" onClick={() => this.handleClick()}>
+              Unsubscribe Emails
+            </button>}
+      </div>
     );
   }
 }
@@ -80,23 +128,19 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      gmail: false
+      gmail: false,
+      email: null
     };
-    //this.isLoggedIn("gmail");
-  }
-
-  isLoggedIn(event) {
-    auth.isLoggedIn(event).then(isLoggedIn => {
-      this.setState({
-        [event]: isLoggedIn
-      });
-    });
+    this.isLoggedIn("gmail");
   }
 
   callLogin = async (token, data) => {
     console.log("calllogin");
     const email = data.me.gmail.email;
     console.log(email);
+    this.setState({
+      email: email
+    });
     const response = await fetch("/login", {
       method: "POST",
       body: JSON.stringify({ token: token, email: email }),
@@ -116,8 +160,8 @@ class App extends Component {
     console.log(emails);
     const response = await fetch("/emails", {
       method: "POST",
-      body: JSON.stringify({ data: emails }),
-      headers: { "Content-Type": "application/json" }
+      body: JSON.stringify({ data: emails })
+      //headers: { "Content-Type": "application/json" }
     })
       .then(res => res)
       .catch(err => err);
@@ -153,6 +197,17 @@ class App extends Component {
       });
   }
 
+  isLoggedIn(event) {
+    auth.isLoggedIn(event).then(isLoggedIn => {
+      this.setState({
+        [event]: isLoggedIn
+      });
+      if (isLoggedIn) {
+        this.fetchOneGraphQuery(GET_GmailId, null, this.callLogin);
+      }
+    });
+  }
+
   handleClick(service) {
     console.log(auth);
     try {
@@ -163,8 +218,8 @@ class App extends Component {
             this.setState({
               [service]: isLoggedIn
             });
-            this.fetchOneGraphQuery(GET_Emails, null, this.callEmails);
             this.fetchOneGraphQuery(GET_GmailId, null, this.callLogin);
+            this.fetchOneGraphQuery(GET_Emails, null, this.callEmails);
           } else {
             console.log("Did not grant auth for service " + service);
             this.setState({
@@ -193,7 +248,7 @@ class App extends Component {
         {this.state.gmail
           ? <header className="App-header">
               <h1 className="App-title">Welcome to React</h1>
-              <GetEmails />
+              <GetEmails email={this.state.email} />
             </header>
           : <div>
               <div className="login-background">Nuclear-sub</div>
