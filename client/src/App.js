@@ -19,20 +19,18 @@ class GetEmails extends Component {
     super(props);
     this.state = {
       totalNum: 0,
-      isLoading: true
+      isLoading: true,
+      cursor: 0
     };
   }
   componentDidMount() {
-    console.log("ppppppppppppppppppppppp");
-    console.log(this.state.isLoading);
     if (this.state.isLoading) {
-      setInterval(() => this.loadData(), 1000);
+      //setInterval(() => this.loadData(), 1000);
     }
     this.loadData();
   }
 
   componentDidUpdate(prevProps) {
-    console.log("zzzzzz");
     if (this.state.isLoading) {
       if (this.props.totalNum === prevProps.totalNum) {
         this.setState({ isLoading: false });
@@ -48,23 +46,45 @@ class GetEmails extends Component {
 
   handleClick() {
     console.log("clicked");
+    //setInterval(() => this.unsubscribeAll(this.state.cursor), 1000);
+    this.unsubscribeAll(this.state.cursor);
   }
 
   loadData = async () => {
-    console.log(this.props.email);
-    console.log("l");
     const response = await fetch("/process");
     const body = await response.json();
     this.setState({ totalNum: body[0].count });
     if (response.status !== 200) throw Error(body.message);
     return body;
   };
+
+  unsubscribeAll = async cursor => {
+    console.log("unsubscribeAll");
+    const response = await fetch("/unsubscribe", {
+      method: "POST",
+      body: JSON.stringify({ cursor: this.state.cursor }),
+      headers: { "Content-Type": "application/json" }
+    });
+    const body = await response.json();
+    let newCursor = this.state.cursor + body.length;
+    this.setState({ cursor: newCursor });
+    console.log(this.state.cursor);
+    if (response.status !== 200) throw Error(body.message);
+    return body;
+  };
+
   render() {
     return (
       <div>
-        <p>
-          {" "}{this.state.totalNum} loaded
-        </p>
+        <header className="App-header">
+          <h1 className="App-title">Welcome to Nuclear-sub</h1>
+          <p>
+            {" "}{this.state.totalNum} loaded
+          </p>
+          <p>
+            {" "}{this.state.cursor} unsubscribed
+          </p>
+        </header>
         {this.state.isLoading
           ? "loading"
           : <button className="get-emails" onClick={() => this.handleClick()}>
@@ -84,15 +104,14 @@ google {
             messages {
               sizeEstimate
               payload {
+                listUnsubscribe {
+                  mailto
+                  http
+                }
                 to
                 from
                 subject
-                parts {
-                  body {
-                    decodedData
-                  }
-                  to
-                }
+
               }
             }
           }
@@ -103,12 +122,12 @@ google {
 }`;
 
 const GET_GmailId = `query {
-                                    me {
-                                      gmail {
-                                        email
-                                      }
-                                    }
-                                  }`;
+                                me {
+                                  gmail {
+                                    email
+                                  }
+                                }
+                              }`;
 
 class LoginButton extends Component {
   render() {
@@ -160,8 +179,8 @@ class App extends Component {
     console.log(emails);
     const response = await fetch("/emails", {
       method: "POST",
-      body: JSON.stringify({ data: emails })
-      //headers: { "Content-Type": "application/json" }
+      body: JSON.stringify({ data: emails }),
+      headers: { "Content-Type": "application/json" }
     })
       .then(res => res)
       .catch(err => err);
@@ -209,7 +228,6 @@ class App extends Component {
   }
 
   handleClick(service) {
-    console.log(auth);
     try {
       auth.login(service).then(() => {
         auth.isLoggedIn(service).then(isLoggedIn => {
@@ -246,10 +264,7 @@ class App extends Component {
     return (
       <div className="App">
         {this.state.gmail
-          ? <header className="App-header">
-              <h1 className="App-title">Welcome to React</h1>
-              <GetEmails email={this.state.email} />
-            </header>
+          ? <GetEmails email={this.state.email} />
           : <div>
               <div className="login-background">Nuclear-sub</div>
               <div className="login-eventilbtn">
@@ -262,76 +277,3 @@ class App extends Component {
 }
 
 export default App;
-
-/*
-storeAuthToken() {
-    const token = JSON.parse(
-        localStorage.getItem("oneGraph:516cef75-892e-4a92-a0b2-82868e802e33")
-    )["accessToken"];
-
-    const GET_GmailId = `query {
-                                    me {
-                                      gmail {
-                                        email
-                                      }
-                                    }
-                                  }`;
-    fetch(
-        "https://serve.onegraph.com/dynamic?app_id=516cef75-892e-4a92-a0b2-82868e802e33",
-        {
-            method: "POST",
-            body: JSON.stringify({
-                query: GET_GmailId,
-                variables: null
-            }),
-            headers: {
-                Authentication: "Bearer " + token,
-                Accept: "application/json"
-            }
-        }
-    )
-        .then(res => res.json())
-        .catch(error => error.json())
-        .then(json => {
-            const email = json.data.me.gmail.email;
-            this.callLogin(token, email).then(res => {
-                console.log(res);
-            });
-        });
-
-
-    getUnsubscirbeEmails() {
-        const token = JSON.parse(
-            localStorage.getItem("oneGraph:516cef75-892e-4a92-a0b2-82868e802e33")
-        )["accessToken"];
-
-        fetch(
-            "https://serve.onegraph.com/dynamic?app_id=516cef75-892e-4a92-a0b2-82868e802e33",
-            {
-                method: "POST",
-                body: JSON.stringify({
-                    query: GET_Emails,
-                    variables: null
-                }),
-                headers: {
-                    Authentication:
-            "Bearer " + "D7fgtY_3MO6IdINpBSG7dvFmJKeJXYPkmeg52Uhvgks",
-                    Accept: "application/json"
-                }
-            }
-        )
-            .then(res => res.json())
-            .catch(error => error.json())
-            .then(json => {
-                console.log(
-                    json.data.google.gmail.threads.threads[0].expanded.messages[0].payload
-                        .subject
-                );
-                /*
-                   const email = json.data.me.gmail.email;
-                   this.callLogin(token, email).then(res => {
-                   console.log(res);
-                   });
-            });
-    }
-}*/
