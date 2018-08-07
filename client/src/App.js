@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import "./App.css";
 import explosion from "./explosion.mp3";
+import warning from "./warning.png";
 import { gql } from "apollo-boost";
 import { ApolloProvider, Query } from "react-apollo";
 import OneGraphApolloClient from "onegraph-apollo-client";
@@ -25,6 +26,12 @@ class GetEmails extends Component {
     };
   }
   componentDidMount() {
+    /*
+    if (this.refs.unsubscribebtn) {
+      this.refs.unsubscribebtn.addEventListener("mouseover", function() {
+        this.refs.imgWarning.css("display", "block");
+      });
+    }*/
     if (this.state.isLoading) {
       //setInterval(() => this.loadData(), 1000);
     }
@@ -93,11 +100,20 @@ class GetEmails extends Component {
           {this.state.isLoading
             ? "loading"
             : <button
-                className="unsubscribebtn"
+                id="unsubscribebtn"
                 onClick={() => this.handleClick()}
+                ref="unsubscribebtn"
+                onMouseOver={() => {
+                  this.refs.imgWarning.style.display = "inline-block";
+                }}
+                onMouseOut={() => {
+                  this.refs.imgWarning.style.display = "none";
+                }}
               >
                 Unsubscribe All
               </button>}
+          <br />
+          <img id="img-warning" src={warning} alt="Warning!" ref="imgWarning" />
         </header>
       </div>
     );

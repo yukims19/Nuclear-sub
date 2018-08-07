@@ -45,7 +45,7 @@
   background: #b13526;
 }
 
-.unsubscribebtn {
+#unsubscribebtn {
   background-color: red;
   color: white;
   border-radius: 30px;
@@ -56,14 +56,23 @@
   -webkit-transition: all 0.5s;
   transition: all 0.5s;
 }
-.unsubscribebtn:focus {
+#unsubscribebtn:focus {
   outline: 0;
 }
 
-.unsubscribebtn:hover {
+#unsubscribebtn:hover {
   color: white;
   font-size: 3.5rem;
 }
+#unsubscribebtn:hover + #img-warning {
+  display: block;
+}
+#img-warning {
+  width: 200px;
+  margin: 20px;
+  display: none;
+}
+
 /*
 .loaded-emails {
   font-size: 3rem;
