@@ -1,16 +1,44 @@
 .App {
   text-align: center;
 }
-
 .App-main,
 .App-login {
-  background-color: #222;
   height: 100vh;
   padding: 20px;
-  color: white;
 }
 .App-title {
-  font-size: 1.8em;
+  font-size: 2rem;
+}
+#unsubscribebtn {
+  background-color: #1890ff;
+  border-radius: 5px;
+  font-size: 1rem;
+  color: #fff;
+  margin-top: 40px;
+  border: none;
+  padding: 10px;
+}
+#unsubscribebtn:hover {
+  background-color: #40a9ff;
+}
+#unsubscribebtn:active {
+  background-color: #096dd9;
+}
+#unsubscribebtn:focus {
+  outline: 0;
+}
+#img-warning {
+  width: 150px;
+  margin: 20px;
+  display: none;
+}
+.progress {
+  width: 80%;
+  position: relative;
+  left: 10%;
+}
+.progress-bar.progress-bar-striped.progress-bar-animated {
+  color: #7f7f7f;
 }
 .card-footer {
   position: fixed;
@@ -23,7 +51,7 @@
 .card-footer i {
   color: red;
 }
-/*Buttons*/
+/*Login buttons*/
 .loginbtn {
   border-radius: 3px;
   border: none;
@@ -38,13 +66,63 @@
   height: 50px;
   margin-top: 20px;
 }
-.loginbtn-google-plus-g {
-  background: #cf4332;
+.loginbtn-google {
+  background: #4285f4;
 }
-.loginbtn-google-plus-g:hover {
-  background: #b13526;
+.loginbtn-google:hover {
+  background: #0270c0;
 }
 
+/* Nuclear Version!!!!!!!!!!!!!!!!!!!*/
+body {
+  font-family: "Comic Sans MS";
+}
+.App-main,
+.App-login {
+  background-color: #222;
+  height: 100vh;
+  padding: 20px;
+  color: white;
+}
+.App-main.shake-hard.shake-constant {
+  width: 100%;
+}
+.App-title {
+  font-size: 6rem;
+}
+.App-title .yellow {
+  color: yellow;
+}
+.App-title .red {
+  color: red;
+}
+.marquee {
+  height: 150px;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.marquee h1 {
+  display: block;
+  width: 200%;
+  position: absolute;
+  overflow: hidden;
+  animation: marquee 8s linear infinite;
+}
+
+@keyframes marquee {
+  0% {
+    left: 0;
+  }
+  100% {
+    left: -100%;
+  }
+}
+.progress-bar.progress-bar-striped.progress-bar-animated {
+  background-color: #3fb53f;
+  color: #fff;
+}
 #unsubscribebtn {
   background-color: red;
   color: white;
@@ -63,18 +141,8 @@
 #unsubscribebtn:hover {
   color: white;
   font-size: 3.5rem;
+  background-color: red;
 }
-#unsubscribebtn:hover + #img-warning {
-  display: block;
+#unsubscribebtn:active {
+  background-color: red;
 }
-#img-warning {
-  width: 200px;
-  margin: 20px;
-  display: none;
-}
-
-/*
-.loaded-emails {
-  font-size: 3rem;
-  text-decoration: underline;
-}*/

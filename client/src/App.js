@@ -56,7 +56,15 @@ class GetEmails extends Component {
     console.log("clicked");
     var x = document.getElementById("myAudio");
     x.play();
-    //setInterval(() => this.unsubscribeAll(this.state.cursor), 1000);
+    document
+      .getElementsByClassName("App-main")[0]
+      .classList.add("shake-hard", "shake-constant");
+    setTimeout(() => {
+      document
+        .getElementsByClassName("App-main")[0]
+        .classList.remove("shake-hard", "shake-constant");
+    }, 4000);
+    setInterval(() => this.unsubscribeAll(this.state.cursor), 100);
     this.unsubscribeAll(this.state.cursor);
   }
 
@@ -90,13 +98,29 @@ class GetEmails extends Component {
           <audio id="myAudio">
             <source src={explosion} type="audio/mpeg" />
           </audio>
-          <h1 className="App-title">Welcome to Nuclear-sub</h1>
+          <div className="marquee">
+            <h1 className="App-title">
+              <span className="yellow">Welcome to</span>{" "}
+              <span className="red">Nuclear-sub</span>
+            </h1>
+          </div>
           <p className="loaded-emails">
             {" "}{this.state.totalNum} emails loaded
           </p>
-          <p>
-            Unsubscribed {this.state.cursor}
-          </p>
+          <div class="progress">
+            <div
+              class="progress-bar progress-bar-striped progress-bar-animated"
+              role="progressbar"
+              aria-valuenow={this.state.cursor / this.state.totalNum * 100}
+              aria-valuemin="0"
+              aria-valuemax="100"
+              style={{
+                width: this.state.cursor / this.state.totalNum * 100 + "%"
+              }}
+            >
+              Unsubscribed {this.state.cursor} emails
+            </div>
+          </div>
           {this.state.isLoading
             ? "loading"
             : <button
@@ -110,33 +134,39 @@ class GetEmails extends Component {
                   this.refs.imgWarning.style.display = "none";
                 }}
               >
-                Unsubscribe All
+                Unsubscribe All<br />
+                <img
+                  id="img-warning"
+                  src={warning}
+                  alt="Warning!"
+                  ref="imgWarning"
+                />
               </button>}
           <br />
-          <img id="img-warning" src={warning} alt="Warning!" ref="imgWarning" />
         </header>
       </div>
     );
   }
 }
 
-const GET_Emails = `query{
-google {
-    gmail {
-      threads(q: "Unsubscribe", maxResults: 10) {
-        threads {
-          expanded {
-            messages {
-              sizeEstimate
-              payload {
-                listUnsubscribe {
-                  mailto
-                  http
+const GET_Emails = `
+  query {
+    google {
+      gmail {
+        threads(q: "Unsubscribe", maxResults: 10) {
+          threads {
+            expanded {
+              messages {
+                sizeEstimate
+                payload {
+                  listUnsubscribe {
+                    mailto
+                    http
+                  }
+                  to
+                  from
+                  subject
                 }
-                to
-                from
-                subject
-
               }
             }
           }
@@ -144,25 +174,27 @@ google {
       }
     }
   }
-}`;
+`;
 
-const GET_GmailId = `query {
-                                me {
-                                  gmail {
-                                    email
-                                  }
-                                }
-                              }`;
+const GET_GmailId = `
+  query {
+    me {
+      gmail {
+        email
+      }
+    }
+  }
+`;
 
 class LoginButton extends Component {
   render() {
     return (
       <button
-        className={"loginbtn loginbtn-google-plus-g"}
+        className={"loginbtn loginbtn-google"}
         onClick={this.props.onClick}
       >
-        <i className={"fab fa-google-plus-g"} />
-        <span> </span>Login with {" " + this.props.event}
+        <i className={"fab fa-google"}> </i> <span> </span>Login with{" "}
+        {" " + this.props.event}
       </button>
     );
   }
@@ -294,7 +326,7 @@ class App extends Component {
               <div className="App-login">
                 <h1 className="App-title">Welcome to Nuclear-sub</h1>
                 <p>Unsubscribe your emails!</p>
-                <div className="login-google-plus-g">
+                <div className="login-google">
                   {this.renderButton("Gmail", "gmail")}
                 </div>
               </div>
