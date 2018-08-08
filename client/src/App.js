@@ -3,6 +3,7 @@ import "./App.css";
 import explosion from "./explosion.mp3";
 import rockAudio from "./rock.m4a";
 import warning from "./warning.png";
+import fire from "./fire.jpg";
 import { gql } from "apollo-boost";
 import { ApolloProvider, Query } from "react-apollo";
 import OneGraphApolloClient from "onegraph-apollo-client";
@@ -36,13 +37,20 @@ class GetEmails extends Component {
     if (this.state.isLoading) {
       //setInterval(() => this.loadData(), 1000);
     }
+    const helper = async () => {
+      await this.loadData();
+      setTimeout(helper, 1000);
+    };
+
+    setTimeout(helper, 1000);
+
     // this.loadData();
     //Cheating here to see if this will process after logins
-    setTimeout(() => {
-      console.log("how about here?");
-      this.loadData();
-    }, 3000);
-    this.loadData();
+    /* setTimeout(() => {
+       *   console.log("how about here?");
+       *   this.loadData();
+       * }, 3000);*/
+    /* this.loadData();*/
   }
 
   componentDidUpdate(prevProps) {
@@ -60,7 +68,6 @@ class GetEmails extends Component {
   }
 
   handleClick() {
-    console.log("clicked");
     var explosion = document.getElementById("myAudio");
     explosion.play();
     document
@@ -72,7 +79,7 @@ class GetEmails extends Component {
         .classList.remove("shake-hard", "shake-constant");
     }, 4000);
     setInterval(() => this.unsubscribeAll(this.state.cursor), 100);
-    this.unsubscribeAll(this.state.cursor);
+    //this.unsubscribeAll(this.state.cursor);
   }
 
   loadData = async () => {
@@ -85,7 +92,6 @@ class GetEmails extends Component {
   };
 
   unsubscribeAll = async cursor => {
-    console.log("unsubscribeAll");
     const response = await fetch("/unsubscribe", {
       method: "POST",
       body: JSON.stringify({ cursor: this.state.cursor }),
@@ -94,13 +100,11 @@ class GetEmails extends Component {
     const body = await response.json();
     let newCursor = this.state.cursor + body.length;
     this.setState({ cursor: newCursor });
-    console.log(this.state.cursor);
     if (response.status !== 200) throw Error(body.message);
     return body;
   };
 
   render() {
-    console.log("how about here?");
     return (
       <div>
         <header className="App-main">
@@ -213,9 +217,9 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      isNuclear: true,
       gmail: false,
-      email: null,
-      isNuclear: true
+      email: null
     };
     this.isLoggedIn("gmail");
   }
@@ -227,9 +231,7 @@ class App extends Component {
     }
   }
   callLogin = async (token, data) => {
-    console.log("calllogin");
     const email = data.me.gmail.email;
-    console.log(email);
     this.setState({
       email: email
     });
@@ -247,9 +249,7 @@ class App extends Component {
   };
 
   callEmails = async (token, data) => {
-    console.log("callemails");
     const emails = data.google.gmail.threads.threads;
-    console.log(emails);
     const response = await fetch("/emails", {
       method: "POST",
       body: JSON.stringify({ data: emails }),
@@ -336,6 +336,8 @@ class App extends Component {
   render() {
     return (
       <div className={this.state.isNuclear ? "App-nuclear" : "App"}>
+        <img id="fire-left" src={fire} alt="fire" />
+        <img id="fire-right" src={fire} alt="fire" />
         <audio id="rock">
           <source src={rockAudio} type="audio/mpeg" />
         </audio>
