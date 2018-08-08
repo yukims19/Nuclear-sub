@@ -55,6 +55,7 @@ app.post("/login", (req, res) => {
 app.post("/unsubscribe", (req, res) => {
   console.log("unsubscribing");
   const cursor = req.body.cursor;
+  console.log(cursor);
   const sql = escape("SELECT url FROM emails WHERE id > %s limit 2;", cursor);
   client
     .query(sql)
@@ -62,15 +63,17 @@ app.post("/unsubscribe", (req, res) => {
       const resData = response.rows;
       console.log(resData);
       resData.forEach(e => {
-        fetch(e.url)
-          .then(res => {
-            res;
-            console.log(res.status);
-          })
-          .catch(error => {
-            console.log(error);
-            error;
-          });
+        if (e) {
+          fetch(e.url)
+            .then(res => {
+              res;
+              console.log(res.status);
+            })
+            .catch(error => {
+              console.log(error);
+              error;
+            });
+        }
       });
       res.send(resData);
     })
@@ -80,6 +83,7 @@ app.post("/unsubscribe", (req, res) => {
 });
 
 app.get("/process", (req, res) => {
+  console.log("process here");
   var sql = "SELECT count(*) FROM emails";
   let resData;
   client.query(sql, (error, response) => {
