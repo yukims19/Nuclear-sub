@@ -73,14 +73,17 @@
 .loginbtn-google:hover {
   background: #0270c0;
 }
-
+#fire-left,
+#fire-right {
+  display: none;
+}
 /* Nuclear Version!!!!!!!!!!!!!!!!!!!*/
 .App-nuclear {
   font-family: "Comic Sans MS";
 }
 .App-nuclear .App-main,
 .App-nuclear .App-login {
-  background-color: #222;
+  background-color: black;
   height: 100vh;
   padding: 20px;
   color: white;
@@ -146,4 +149,17 @@
 }
 .App-nuclear #unsubscribebtn:active {
   background-color: red;
+}
+.App-nuclear #fire-left,
+.App-nuclear #fire-right {
+  display: block;
+  position: absolute;
+  width: 30%;
+  bottom: 50px;
+}
+.App-nuclear #fire-left {
+  left: 10px;
+}
+.App-nuclear #fire-right {
+  right: 10px;
 }
