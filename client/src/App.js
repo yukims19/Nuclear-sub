@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "./App.css";
 import explosion from "./explosion.mp3";
-import rockAudio from "./rock.m4a";
+import rockAudio from "./rockit.mp3";
 import warning from "./warning.png";
 import fire from "./fire.jpg";
 import { gql } from "apollo-boost";
@@ -70,6 +70,18 @@ class GetEmails extends Component {
   handleClick() {
     var explosion = document.getElementById("myAudio");
     explosion.play();
+    const rockAudio = document.getElementById("rock");
+    rockAudio.pause();
+    rockAudio.volume = 0.0;
+    setTimeout(() => {
+      rockAudio.play();
+      setInterval(() => {
+        if (!rockAudio.volume >= 0.9) {
+          rockAudio.volume += 0.3;
+        }
+      }, 100);
+    }, 5000);
+    /*cursor
     document
       .getElementsByClassName("App-main")[0]
       .classList.add("shake-hard", "shake-constant");
