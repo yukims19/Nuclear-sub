@@ -9,13 +9,13 @@ const { Client } = require("pg");
 const escape = require("pg-escape");
 const fetch = require("node-fetch");
 
-//const connectionString =
-//  "postgres://someuser:somepassword@somehost:381/somedatabase";
+const connectionString =
+  "postgres://someuser:somepassword@somehost:381/somedatabase";
 
 const client = new Client({ connectionString: connectionString });
 client.connect();
 
-app.post("/emails", (req, res) => {
+app.post("/store", (req, res) => {
   console.log("/emails here");
   const data = req.body.data;
   let values = [];
@@ -63,6 +63,7 @@ app.post("/login", (req, res) => {
 app.post("/unsubscribe", async (req, res) => {
   console.log("/unsubscribe here");
   let isFinished = false;
+  let emailReturnList = [];
   async function unsubscribe() {
     const sql = escape(
       "SELECT id, url FROM emails WHERE status IS NULL limit 5;"
@@ -72,6 +73,7 @@ app.post("/unsubscribe", async (req, res) => {
       const resData = emailsRes.rows;
       (async function loop() {
         for (let i = 0; i < resData.length; i++) {
+          emailReturnList.push(resData[i].url);
           fetch(resData[i].url)
             .then(response => console.log(response.status))
             .catch(error => console.log(error));
@@ -89,11 +91,11 @@ app.post("/unsubscribe", async (req, res) => {
       console.error(emailsRes);
     }
   }
-  unsubscribe().then(() => res.send({ state: "success" }));
+  unsubscribe().then(() => res.send({ unsubscribedEmails: emailReturnList }));
 });
 
-app.get("/process", async (req, res) => {
-  console.log("/process here");
+app.get("/status", async (req, res) => {
+  console.log("/status here");
   let allEmails = 0;
   let count = 0;
   const sqlAllEmails = "SELECT count(*) FROM emails";
