@@ -91,34 +91,47 @@ class GetEmails extends Component {
         .classList.remove("shake-hard", "shake-constant");
     }, 4000);
     setInterval(() => this.unsubscribeAll(this.state.cursor), 100);
-    //this.unsubscribeAll(this.state.cursor);
+    this.unsubscribeAll(this.state.cursor);
   }
 
   loadData = async () => {
     console.log("process here");
     const response = await fetch("/process");
     const body = await response.json();
-    this.setState({ totalNum: body[0].count });
+    this.setState({ totalNum: body.allEmails, cursor: parseInt(body.count) });
     if (response.status !== 200) throw Error(body.message);
     return body;
+    /*
+         let newUnsubEmails = this.state.unsubEmails.slice();
+         newUnsubEmails = newUnsubEmails.concat(body);
+         this.setState({ unsubEmails: newUnsubEmails });
+         let newCursor = body;*/
   };
 
   unsubscribeAll = async cursor => {
     const response = await fetch("/unsubscribe", {
       method: "POST",
-      body: JSON.stringify({ cursor: this.state.cursor }),
+      body: JSON.stringify({}),
       headers: { "Content-Type": "application/json" }
     });
-    const body = await response.json();
-    let newCursor = this.state.cursor + body.length;
-    this.setState({ cursor: newCursor });
-    if (response.status !== 200) throw Error(body.message);
-    return body;
+    try {
+      const body = await response.json();
+    } catch (response) {
+      if (response.status !== 200) throw Error(body.message);
+      const body = [];
+    }
   };
 
   render() {
     return (
       <div>
+        {/*this.state.unsubEmails.map(email => {
+          return (
+            <li>
+              {email.url}
+            </li>
+          );
+        })*/}
         <header className="App-main">
           <audio id="myAudio">
             <source src={explosion} type="audio/mpeg" />
