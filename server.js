@@ -60,44 +60,60 @@ app.post("/login", (req, res) => {
   });
 });
 
-app.post("/unsubscribe", (req, res) => {
+app.post("/unsubscribe", async (req, res) => {
   console.log("unsubscribing");
-  const cursor = req.body.cursor;
-  console.log(cursor);
-  const sql = escape("SELECT url FROM emails WHERE id > %s limit 2;", cursor);
-  client
-    .query(sql)
-    .then(response => {
-      const resData = response.rows;
+  let isFinished = false;
+  async function unsubscribe() {
+    const sql = escape(
+      "SELECT id, url FROM emails WHERE status IS NULL limit 5;"
+    );
+    const emailsRes = await client.query(sql);
+    try {
+      const resData = emailsRes.rows;
       console.log(resData);
-      resData.forEach(e => {
-        if (e) {
-          fetch(e.url)
-            .then(res => {
-              res;
-              console.log(res.status);
-            })
-            .catch(error => {
-              console.log(error);
-              error;
-            });
+      (async function loop() {
+        for (let i = 0; i < resData.length; i++) {
+          fetch(resData[i].url)
+            .then(response => console.log(response.status))
+            .catch(error => console.log(error));
+          const sqlStatus = escape(
+            "UPDATE emails SET status = 1 WHERE id = '%s'",
+            resData[i].id
+          );
+          client
+            .query(sqlStatus)
+            .then(response => console.log(response))
+            .catch(error => console.log(error));
         }
-      });
-      res.send(resData);
-    })
-    .catch(error => {
-      console.log(error);
-    });
+      })();
+    } catch (emailsRes) {
+      console.error(emailsRes);
+    }
+  }
+  unsubscribe().then(() => res.send({ state: "success" }));
 });
 
-app.get("/process", (req, res) => {
+app.get("/process", async (req, res) => {
   console.log("process here");
-  var sql = "SELECT count(*) FROM emails";
-  let resData;
-  client.query(sql, (error, response) => {
-    resData = response.rows;
-    res.send(resData);
-  });
+  let allEmails = 0;
+  let count = 0;
+  const sqlAllEmails = "SELECT count(*) FROM emails";
+  const allEmailsRes = await client.query(sqlAllEmails);
+  try {
+    allEmails = allEmailsRes.rows[0].count;
+  } catch (allEmailsRes) {
+    console.error("Failed to get data from DB:" + allEmailsRes);
+  }
+
+  const sqlCount = escape("SELECT count(*) FROM emails WHERE status = 1");
+  const countRes = await client.query(sqlCount);
+  try {
+    count = countRes.rows[0].count;
+  } catch (countRes) {
+    console.error("Failed to get data from DB:" + countRes);
+  }
+
+  res.send({ allEmails: allEmails, count: count });
 });
 
 app.listen(port, function() {
