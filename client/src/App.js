@@ -51,7 +51,6 @@ class GetEmails extends Component {
         this.setState({ isLoading: true });
       }
     }
-    console.log(this.state.isLoading);
   }
 
   handleClick() {
@@ -63,11 +62,14 @@ class GetEmails extends Component {
     setTimeout(() => {
       rockAudio.play();
       setInterval(() => {
-        if (!rockAudio.volume >= 0.9) {
-          rockAudio.volume += 0.3;
+        if (rockAudio.volume < 0.7) {
+          console.log("111111");
+          console.log(rockAudio.volume);
+          rockAudio.volume += 0.1;
         }
-      }, 100);
+      }, 1000);
     }, 5000);
+
     document
       .getElementsByClassName("App-main")[0]
       .classList.add("shake-hard", "shake-constant");
@@ -81,7 +83,6 @@ class GetEmails extends Component {
   }
 
   loadData = async () => {
-    console.log("process here");
     const response = await fetch("/process");
     const body = await response.json();
     this.setState({ totalNum: body.allEmails, cursor: parseInt(body.count) });
@@ -349,7 +350,7 @@ class App extends Component {
       <div className={this.state.isNuclear ? "App-nuclear" : "App"}>
         <img id="fire-left" src={fire} alt="fire" />
         <img id="fire-right" src={fire} alt="fire" />
-        <audio id="rock">
+        <audio id="rock" autoplay>
           <source src={rockAudio} type="audio/mpeg" />
         </audio>
         {//this.state.gmail
