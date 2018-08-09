@@ -1,0 +1,39 @@
+.main-content {
+  width: 80%;
+  position: relative;
+  left: 10%;
+  display: flex;
+  margin-top: 100px;
+}
+.main-content .main-image {
+  padding: 20px;
+  flex-grow: 1;
+}
+.main-content .main-image img {
+  width: 100%;
+}
+.main-content .description {
+  padding: 20px;
+  text-align: center;
+  flex-grow: 1;
+  font-size: 2rem;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+}
+.pointer {
+  width: 100%;
+}
+
+.card-footer {
+  position: fixed;
+  bottom: 0px;
+  width: 100%;
+  background-color: #cfcfcf;
+  color: #7f7f7f;
+  cursor: default;
+  text-align: center;
+}
+.card-footer i {
+  color: red;
+}
