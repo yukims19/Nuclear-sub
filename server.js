@@ -16,11 +16,11 @@ const client = new Client({ connectionString: connectionString });
 client.connect();
 
 app.post("/emails", (req, res) => {
-  console.log("Got you emails");
+  console.log("/emails here");
   const data = req.body.data;
   let values = [];
   for (let i = 0; i < data.length; i++) {
-    //TODO:Check when login works
+    //TODO:Check when login works & fix url
     /*
     if (!e.expanded.messages[0].payload.listUnsubscribe.http) {
       continue;
@@ -43,7 +43,7 @@ app.post("/emails", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  console.log("Got you login");
+  console.log("/login here");
   const token = req.body.token;
   const email = req.body.email;
   const sql = escape(
@@ -61,7 +61,7 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/unsubscribe", async (req, res) => {
-  console.log("unsubscribing");
+  console.log("/unsubscribe here");
   let isFinished = false;
   async function unsubscribe() {
     const sql = escape(
@@ -70,7 +70,6 @@ app.post("/unsubscribe", async (req, res) => {
     const emailsRes = await client.query(sql);
     try {
       const resData = emailsRes.rows;
-      console.log(resData);
       (async function loop() {
         for (let i = 0; i < resData.length; i++) {
           fetch(resData[i].url)
@@ -94,7 +93,7 @@ app.post("/unsubscribe", async (req, res) => {
 });
 
 app.get("/process", async (req, res) => {
-  console.log("process here");
+  console.log("/process here");
   let allEmails = 0;
   let count = 0;
   const sqlAllEmails = "SELECT count(*) FROM emails";
