@@ -162,6 +162,7 @@
 .App-nuclear .progress-bar.progress-bar-striped.progress-bar-animated {
   background-color: #3fb53f;
   color: #fff;
+  text-align: right;
 }
 .App-nuclear #unsubscribebtn {
   background-color: red;
