@@ -4,9 +4,6 @@ import explosion from "./explosion.mp3";
 import rockAudio from "./rockit.mp3";
 import warning from "./warning.png";
 import fire from "./fire.jpg";
-import { gql } from "apollo-boost";
-import { ApolloProvider, Query } from "react-apollo";
-import OneGraphApolloClient from "onegraph-apollo-client";
 import OneGraphAuth from "onegraph-auth";
 import idx from "idx";
 
@@ -14,43 +11,22 @@ const APP_ID = "516cef75-892e-4a92-a0b2-82868e802e33";
 const auth = new OneGraphAuth({
   appId: APP_ID
 });
-const client = new OneGraphApolloClient({
-  oneGraphAuth: auth
-});
 
 class GetEmails extends Component {
   constructor(props) {
     super(props);
     this.state = {
       totalNum: 0,
-      isLoading: true,
       cursor: 0,
       unsubEmails: []
     };
   }
   componentDidMount() {
-    if (this.state.isLoading) {
-      //setInterval(() => this.loadData(), 1000);
-    }
     const helper = async () => {
       await this.loadData();
       setTimeout(helper, 100);
     };
-
     setTimeout(helper, 100);
-    // this.loadData();
-  }
-  componentDidUpdate(prevProps) {
-    if (this.state.isLoading) {
-      if (this.props.totalNum === prevProps.totalNum) {
-        this.setState({ isLoading: false });
-      }
-    }
-    if (!this.state.isLoading) {
-      if (this.props.totalNum !== prevProps.totalNum) {
-        this.setState({ isLoading: true });
-      }
-    }
   }
 
   handleClick() {
@@ -63,8 +39,6 @@ class GetEmails extends Component {
       rockAudio.play();
       setInterval(() => {
         if (rockAudio.volume < 0.7) {
-          console.log("111111");
-          console.log(rockAudio.volume);
           rockAudio.volume += 0.1;
         }
       }, 1000);
@@ -79,20 +53,23 @@ class GetEmails extends Component {
         .classList.remove("shake-hard", "shake-constant");
     }, 4000);
     setInterval(() => this.unsubscribeAll(this.state.cursor), 100);
-    this.unsubscribeAll(this.state.cursor);
+    //this.unsubscribeAll(this.state.cursor);
   }
 
   loadData = async () => {
     const response = await fetch("/process");
     const body = await response.json();
-    this.setState({ totalNum: body.allEmails, cursor: parseInt(body.count) });
+    this.setState({
+      totalNum: body.allEmails,
+      cursor: parseInt(body.count, 10)
+    });
     if (response.status !== 200) throw Error(body.message);
     return body;
     /*
-         let newUnsubEmails = this.state.unsubEmails.slice();
-         newUnsubEmails = newUnsubEmails.concat(body);
-         this.setState({ unsubEmails: newUnsubEmails });
-         let newCursor = body;*/
+           let newUnsubEmails = this.state.unsubEmails.slice();
+           newUnsubEmails = newUnsubEmails.concat(body);
+           this.setState({ unsubEmails: newUnsubEmails });
+           let newCursor = body;*/
   };
 
   unsubscribeAll = async cursor => {
@@ -101,24 +78,20 @@ class GetEmails extends Component {
       body: JSON.stringify({}),
       headers: { "Content-Type": "application/json" }
     });
-    try {
-      const body = await response.json();
-    } catch (response) {
-      if (response.status !== 200) throw Error(body.message);
-      const body = [];
-    }
+    const body = await response;
+    if (response.status !== 200) throw Error(body.message);
   };
 
   render() {
     return (
       <div>
         {/*this.state.unsubEmails.map(email => {
-          return (
-            <li>
-              {email.url}
-            </li>
-          );
-        })*/}
+                    return (
+                    <li>
+                    {email.url}
+                    </li>
+                    );
+                    })*/}
         <header className="App-main">
           <audio id="myAudio">
             <source src={explosion} type="audio/mpeg" />
@@ -243,7 +216,7 @@ class App extends Component {
     }
   }
   callLogin = async (token, data) => {
-    const email = data.me.gmail.email;
+    const email = idx(data, _ => _.me.gmail.email);
     this.setState({
       email: email
     });
@@ -261,7 +234,7 @@ class App extends Component {
   };
 
   callEmails = async (token, data) => {
-    const emails = data.google.gmail.threads.threads;
+    const emails = idx(data, _ => _.google.gmail.threads.threads);
     const response = await fetch("/emails", {
       method: "POST",
       body: JSON.stringify({ data: emails }),
@@ -350,7 +323,7 @@ class App extends Component {
       <div className={this.state.isNuclear ? "App-nuclear" : "App"}>
         <img id="fire-left" src={fire} alt="fire" />
         <img id="fire-right" src={fire} alt="fire" />
-        <audio id="rock" autoplay>
+        <audio id="rock" allow="autoplay">
           <source src={rockAudio} type="audio/mpeg" />
         </audio>
         {//this.state.gmail
