@@ -80,7 +80,6 @@ class GetEmails extends Component {
     });
     try {
       const body = await response.json();
-      console.log(body);
       let newUnsubEmails = this.state.unsubEmails.slice();
       newUnsubEmails = newUnsubEmails.concat(body.unsubscribedEmails);
       this.setState({ unsubEmails: newUnsubEmails });
@@ -216,7 +215,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isNuclear: true,
+      //isNuclear: true,
       gmail: false,
       email: null
     };
