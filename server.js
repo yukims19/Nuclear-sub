@@ -16,30 +16,34 @@ const client = new Client({ connectionString: connectionString });
 client.connect();
 
 app.post("/store", (req, res) => {
-  console.log("/emails here");
+  console.log("/store here");
   const data = req.body.data;
   let values = [];
-  for (let i = 0; i < data.length; i++) {
-    //TODO:Check when login works & fix url
-    /*
-    if (!e.expanded.messages[0].payload.listUnsubscribe.http) {
+  if (!data) {
+    res.send({ error: "No Data Found" });
+  } else {
+    for (let i = 0; i < data.length; i++) {
+      //TODO:Check when login works & fix url
+      /*
+    if (!data[i].expanded.messages[0].payload.listUnsubscribe.http) {
       continue;
     }*/
-    const subject = e.expanded.messages[0].payload.subject;
-    const from = e.expanded.messages[0].payload.from;
-    const to = e.expanded.messages[0].payload.to;
-    const url =
-      "https://mandrillapp.com/track/click/30254777/mandrillapp.com?p=eyJzIjoibWNYaVl3NmZFTjlUTlRnUWJ4OXg5NElRbEJNIiwidiI6MSwicCI6IntcInVcIjozMDI1NDc3NyxcInZcIjoxLFwidXJsXCI6XCJodHRwOlxcXC9cXFwvbWFuZHJpbGxhcHAuY29tXFxcL3RyYWNrXFxcL3Vuc3ViLnBocD91PTMwMjU0Nzc3JmlkPTRlZjY5MWM5YWFmNTRmNmM5NzBkMjJkZTFhN2I4NDljLmJUeDIycWhEeFBYTHBNU0V3VjRoTXZVSnh6YyUzRCZyPWh0dHBzJTNBJTJGJTJGd3d3LnNtYXJ0cmVjcnVpdGVycy5jb20lMkZ0ZXJtcy1hbmQtY29uZGl0aW9ucyUyRmpvYnMtZm9yLW1lLXVuc3Vic2NyaWJlJTJGJTNGbWRfZW1haWwlM0R5b2wxMDclMjU0MHVjc2QuZWR1XCIsXCJpZFwiOlwiNGVmNjkxYzlhYWY1NGY2Yzk3MGQyMmRlMWE3Yjg0OWNcIixcInVybF9pZHNcIjpbXCI4N2Y5MjNmMTgyODZmYzk3ODAwYTU3MDdlYTIwMmMzYTA0NTAwZmE0XCJdfSJ9";
-    values.push(
-      "('" + subject + "', '" + from + "', '" + to + "', '" + url + "')"
-    );
+      const subject = data[i].expanded.messages[0].payload.subject;
+      const from = data[i].expanded.messages[0].payload.from;
+      const to = data[i].expanded.messages[0].payload.to;
+      const url =
+        "https://mandrillapp.com/track/click/30254777/mandrillapp.com?p=eyJzIjoibWNYaVl3NmZFTjlUTlRnUWJ4OXg5NElRbEJNIiwidiI6MSwicCI6IntcInVcIjozMDI1NDc3NyxcInZcIjoxLFwidXJsXCI6XCJodHRwOlxcXC9cXFwvbWFuZHJpbGxhcHAuY29tXFxcL3RyYWNrXFxcL3Vuc3ViLnBocD91PTMwMjU0Nzc3JmlkPTRlZjY5MWM5YWFmNTRmNmM5NzBkMjJkZTFhN2I4NDljLmJUeDIycWhEeFBYTHBNU0V3VjRoTXZVSnh6YyUzRCZyPWh0dHBzJTNBJTJGJTJGd3d3LnNtYXJ0cmVjcnVpdGVycy5jb20lMkZ0ZXJtcy1hbmQtY29uZGl0aW9ucyUyRmpvYnMtZm9yLW1lLXVuc3Vic2NyaWJlJTJGJTNGbWRfZW1haWwlM0R5b2wxMDclMjU0MHVjc2QuZWR1XCIsXCJpZFwiOlwiNGVmNjkxYzlhYWY1NGY2Yzk3MGQyMmRlMWE3Yjg0OWNcIixcInVybF9pZHNcIjpbXCI4N2Y5MjNmMTgyODZmYzk3ODAwYTU3MDdlYTIwMmMzYTA0NTAwZmE0XCJdfSJ9";
+      values.push(
+        "('" + subject + "', '" + from + "', '" + to + "', '" + url + "')"
+      );
+    }
+    const sqlValues = values.join(", ");
+    const sql = escape("INSERT INTO emails values %s", sqlValues);
+    client.query(sql, (error, response) => {
+      console.log(error, response);
+      res.send(response);
+    });
   }
-  const sqlValues = values.join(", ");
-  const sql = escape("INSERT INTO emails values %s", sqlValues);
-  client.query(sql, (error, response) => {
-    console.log(error, response);
-    res.send(response);
-  });
 });
 
 app.post("/login", (req, res) => {
