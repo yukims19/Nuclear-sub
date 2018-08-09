@@ -163,8 +163,11 @@ class GetEmails extends Component {
 const GET_Emails = `
   query {
     google {
+  query($pageToken: String) {
+    google (
       gmail {
-        threads(q: "Unsubscribe", maxResults: 10) {
+        threads(pageToken:$pageToken, q: "Unsubscribe", maxResults: 2) {
+          nextPageToken
           threads {
             expanded {
               messages {
@@ -217,7 +220,8 @@ class App extends Component {
     this.state = {
       //isNuclear: true,
       gmail: false,
-      email: null
+      email: null,
+      pageToken: null
     };
     this.isLoggedIn("gmail");
   }
@@ -246,19 +250,31 @@ class App extends Component {
     return body;
   };
 
-  callEmails = async (token, data) => {
+  callStoreEmails = async (token, data) => {
+    console.log("/store");
     const emails = idx(data, _ => _.google.gmail.threads.threads);
+    const nextPageToken = idx(data, _ => _.google.gmail.threads.nextPageToken);
+    this.setState({ pageToken: nextPageToken });
     const response = await fetch("/store", {
       method: "POST",
       body: JSON.stringify({ data: emails }),
       headers: { "Content-Type": "application/json" }
     })
-      .then(res => res)
-      .catch(err => err);
-
+      .then(res => res.json())
+      .catch(err => err)
+      .then(res => {
+        if (this.state.pageToken) {
+          this.fetchOneGraphQuery(
+            GET_Emails,
+            { pageToken: this.state.pageToken },
+            this.callStoreEmails
+          );
+        }
+      });
+    /*
     const body = await response;
     if (response.status !== 200) throw Error(body.message);
-    return body;
+    return body;*/
   };
 
   fetchOneGraphQuery(query, v, callServer) {
@@ -280,7 +296,7 @@ class App extends Component {
       }
     )
       .then(res => res.json())
-      .catch(error => error.json())
+      .catch(error => error)
       .then(json => {
         const data = json.data;
         callServer(token, data).then(res => res);
@@ -308,7 +324,7 @@ class App extends Component {
               [service]: isLoggedIn
             });
             this.fetchOneGraphQuery(GET_GmailId, null, this.callLogin);
-            this.fetchOneGraphQuery(GET_Emails, null, this.callEmails);
+            this.fetchOneGraphQuery(GET_Emails, null, this.callStoreEmails);
           } else {
             console.log("Did not grant auth for service " + service);
             this.setState({
