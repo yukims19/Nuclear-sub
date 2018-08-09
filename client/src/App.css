@@ -18,6 +18,7 @@
   margin-top: 40px;
   border: none;
   padding: 10px;
+  position: relative;
 }
 #unsubscribebtn:hover {
   background-color: #40a9ff;
@@ -77,6 +78,41 @@
 #fire-right {
   display: none;
 }
+.unsubscribed-emails {
+  white-space: nowrap;
+  left: 5%;
+  position: absolute;
+  top: 20vh;
+  height: 80vh;
+  overflow: hidden;
+  z-index: 0;
+}
+.unsubscribed-emails li {
+  color: #cfcfcf;
+  animation: list 8s forwards;
+}
+@keyframes list {
+  0% {
+    transform: translateY(100vh);
+    opacity: 1;
+  }
+  70% {
+    transform: translateY(-100vh);
+    opacity: 1;
+  }
+  100% {
+    // opacity: 0;
+  }
+}
+@keyframes div {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
+
 /* Nuclear Version!!!!!!!!!!!!!!!!!!!*/
 .App-nuclear {
   font-family: "Comic Sans MS";

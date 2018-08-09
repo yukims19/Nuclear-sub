@@ -57,7 +57,7 @@ class GetEmails extends Component {
   }
 
   loadData = async () => {
-    const response = await fetch("/process");
+    const response = await fetch("/status");
     const body = await response.json();
     this.setState({
       totalNum: body.allEmails,
@@ -68,8 +68,8 @@ class GetEmails extends Component {
     /*
            let newUnsubEmails = this.state.unsubEmails.slice();
            newUnsubEmails = newUnsubEmails.concat(body);
-           this.setState({ unsubEmails: newUnsubEmails });
-           let newCursor = body;*/
+      this.setState({ unsubEmails: newUnsubEmails });
+      let newCursor = body;*/
   };
 
   unsubscribeAll = async cursor => {
@@ -78,21 +78,35 @@ class GetEmails extends Component {
       body: JSON.stringify({}),
       headers: { "Content-Type": "application/json" }
     });
-    const body = await response;
-    if (response.status !== 200) throw Error(body.message);
+    try {
+      const body = await response.json();
+      console.log(body);
+      let newUnsubEmails = this.state.unsubEmails.slice();
+      newUnsubEmails = newUnsubEmails.concat(body.unsubscribedEmails);
+      this.setState({ unsubEmails: newUnsubEmails });
+    } catch (response) {
+      const body = await response;
+      if (response.status !== 200) throw Error(body.message);
+    }
   };
 
   render() {
     return (
       <div>
-        {/*this.state.unsubEmails.map(email => {
-                    return (
-                    <li>
-                    {email.url}
-                    </li>
-                    );
-                    })*/}
         <header className="App-main">
+          <img id="fire-left" src={fire} alt="fire" />
+          <img id="fire-right" src={fire} alt="fire" />
+          <div className="unsubscribed-emails">
+            {this.state.unsubEmails
+              ? this.state.unsubEmails.map(email => {
+                  return (
+                    <li>
+                      {email}
+                    </li>
+                  );
+                })
+              : ""}
+          </div>
           <audio id="myAudio">
             <source src={explosion} type="audio/mpeg" />
           </audio>
@@ -235,7 +249,7 @@ class App extends Component {
 
   callEmails = async (token, data) => {
     const emails = idx(data, _ => _.google.gmail.threads.threads);
-    const response = await fetch("/emails", {
+    const response = await fetch("/store", {
       method: "POST",
       body: JSON.stringify({ data: emails }),
       headers: { "Content-Type": "application/json" }
@@ -321,8 +335,6 @@ class App extends Component {
   render() {
     return (
       <div className={this.state.isNuclear ? "App-nuclear" : "App"}>
-        <img id="fire-left" src={fire} alt="fire" />
-        <img id="fire-right" src={fire} alt="fire" />
         <audio id="rock" allow="autoplay">
           <source src={rockAudio} type="audio/mpeg" />
         </audio>
