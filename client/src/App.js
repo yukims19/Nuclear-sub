@@ -24,35 +24,22 @@ class GetEmails extends Component {
     this.state = {
       totalNum: 0,
       isLoading: true,
-      cursor: 0
+      cursor: 0,
+      unsubEmails: []
     };
   }
   componentDidMount() {
-    /*
-    if (this.refs.unsubscribebtn) {
-      this.refs.unsubscribebtn.addEventListener("mouseover", function() {
-        this.refs.imgWarning.css("display", "block");
-      });
-    }*/
     if (this.state.isLoading) {
       //setInterval(() => this.loadData(), 1000);
     }
     const helper = async () => {
       await this.loadData();
-      setTimeout(helper, 1000);
+      setTimeout(helper, 100);
     };
 
-    setTimeout(helper, 1000);
-
+    setTimeout(helper, 100);
     // this.loadData();
-    //Cheating here to see if this will process after logins
-    /* setTimeout(() => {
-       *   console.log("how about here?");
-       *   this.loadData();
-       * }, 3000);*/
-    /* this.loadData();*/
   }
-
   componentDidUpdate(prevProps) {
     if (this.state.isLoading) {
       if (this.props.totalNum === prevProps.totalNum) {
@@ -81,7 +68,6 @@ class GetEmails extends Component {
         }
       }, 100);
     }, 5000);
-    /*cursor
     document
       .getElementsByClassName("App-main")[0]
       .classList.add("shake-hard", "shake-constant");
@@ -145,9 +131,9 @@ class GetEmails extends Component {
           <p className="loaded-emails">
             {" "}{this.state.totalNum} emails loaded
           </p>
-          <div class="progress">
+          <div className="progress">
             <div
-              class="progress-bar progress-bar-striped progress-bar-animated"
+              className="progress-bar progress-bar-striped progress-bar-animated"
               role="progressbar"
               aria-valuenow={this.state.cursor / this.state.totalNum * 100}
               aria-valuemin="0"
