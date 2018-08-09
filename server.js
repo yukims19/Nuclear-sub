@@ -18,14 +18,22 @@ client.connect();
 app.post("/emails", (req, res) => {
   console.log("Got you emails");
   const data = req.body.data;
-  const values = data.map(e => {
+  let values = [];
+  for (let i = 0; i < data.length; i++) {
+    //TODO:Check when login works
+    /*
+    if (!e.expanded.messages[0].payload.listUnsubscribe.http) {
+      continue;
+    }*/
     const subject = e.expanded.messages[0].payload.subject;
     const from = e.expanded.messages[0].payload.from;
     const to = e.expanded.messages[0].payload.to;
     const url =
       "https://mandrillapp.com/track/click/30254777/mandrillapp.com?p=eyJzIjoibWNYaVl3NmZFTjlUTlRnUWJ4OXg5NElRbEJNIiwidiI6MSwicCI6IntcInVcIjozMDI1NDc3NyxcInZcIjoxLFwidXJsXCI6XCJodHRwOlxcXC9cXFwvbWFuZHJpbGxhcHAuY29tXFxcL3RyYWNrXFxcL3Vuc3ViLnBocD91PTMwMjU0Nzc3JmlkPTRlZjY5MWM5YWFmNTRmNmM5NzBkMjJkZTFhN2I4NDljLmJUeDIycWhEeFBYTHBNU0V3VjRoTXZVSnh6YyUzRCZyPWh0dHBzJTNBJTJGJTJGd3d3LnNtYXJ0cmVjcnVpdGVycy5jb20lMkZ0ZXJtcy1hbmQtY29uZGl0aW9ucyUyRmpvYnMtZm9yLW1lLXVuc3Vic2NyaWJlJTJGJTNGbWRfZW1haWwlM0R5b2wxMDclMjU0MHVjc2QuZWR1XCIsXCJpZFwiOlwiNGVmNjkxYzlhYWY1NGY2Yzk3MGQyMmRlMWE3Yjg0OWNcIixcInVybF9pZHNcIjpbXCI4N2Y5MjNmMTgyODZmYzk3ODAwYTU3MDdlYTIwMmMzYTA0NTAwZmE0XCJdfSJ9";
-    return "('" + subject + "', '" + from + "', '" + to + "', '" + url + "')";
-  });
+    values.push(
+      "('" + subject + "', '" + from + "', '" + to + "', '" + url + "')"
+    );
+  }
   const sqlValues = values.join(", ");
   const sql = escape("INSERT INTO emails values %s", sqlValues);
   client.query(sql, (error, response) => {
