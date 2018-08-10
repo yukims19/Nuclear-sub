@@ -32,7 +32,6 @@ class GetEmails extends Component {
 
   handleClick() {
     this.explosionSound.play();
-    //const rockAudio = document.getElementById("rock");
     this.props.rockAudio.pause();
     clearInterval(this.interval);
     this.props.rockAudio.volume = 0.0;
@@ -50,7 +49,6 @@ class GetEmails extends Component {
       this.setState({ isShaking: false });
     });
     setInterval(() => this.unsubscribeAll(this.state.cursor), 100);
-    //this.unsubscribeAll(this.state.cursor);
   }
 
   loadData = async () => {
@@ -178,11 +176,7 @@ class GetEmails extends Component {
 
 const GET_Emails = `
   query($pageToken: String) {
-    google (
-    auths: {
-      gmailOAuthToken: "ya29.Glz0Be_S2L2gbpXEYgQ9W84olySqnbIpFmFTxCA2RIxaBqqqN6PTArHyyndIdP2K7dwuNbGxEhc5lt1_jq3vGAHKRTchmD398MKn8wcWjYuBtoG_2g_JSpNxIpSuHA"
-    }
-  ) {
+    google {
       gmail {
         threads(pageToken:$pageToken, q: "Unsubscribe", maxResults: 2) {
           nextPageToken
@@ -250,8 +244,7 @@ class App extends Component {
     }
   }
   callLogin = async (token, data) => {
-    console.log("/login");
-    const email = "youxili1920@gmail.com"; //TODO:putback!! idx(data, _ => _.me.gmail.email);
+    const email = idx(data, _ => _.me.gmail.email);
     this.setState({
       email: email
     });
@@ -269,7 +262,6 @@ class App extends Component {
   };
 
   callStoreEmails = async (token, data) => {
-    console.log("/store");
     const emails = idx(data, _ => _.google.gmail.threads.threads);
     const nextPageToken = idx(data, _ => _.google.gmail.threads.nextPageToken);
     this.setState({ pageToken: nextPageToken });
@@ -292,13 +284,7 @@ class App extends Component {
   };
 
   fetchOneGraphQuery(query, v, callServer) {
-    const token =
-      "ya29.Glz0Be_S2L2gbpXEYgQ9W84olySqnbIpFmFTxCA2RIxaBqqqN6PTArHyyndIdP2K7dwuNbGxEhc5lt1_jq3vGAHKRTchmD398MKn8wcWjYuBtoG_2g_JSpNxIpSuHA";
-    /*TODO: Put back when auth fixed
-      const token = JSON.parse(
-          localStorage.getItem("oneGraph:516cef75-892e-4a92-a0b2-82868e802e33")
-    )["accessToken"];*/
-
+    const token = auth.authHeaders().Authentication;
     fetch(
       "https://serve.onegraph.com/dynamic?app_id=516cef75-892e-4a92-a0b2-82868e802e33",
       {
@@ -308,7 +294,7 @@ class App extends Component {
           variables: v
         }),
         headers: {
-          //Authentication: "Bearer " + token,
+          Authentication: token,
           Accept: "application/json"
         }
       }
@@ -333,28 +319,20 @@ class App extends Component {
   }
 
   handleClick(service) {
-    this.fetchOneGraphQuery(GET_GmailId, null, this.callLogin);
-    this.fetchOneGraphQuery(
-      GET_Emails,
-      { pageToken: this.state.pageToken },
-      this.callStoreEmails
-    );
-
-    /*
-        try {
-            auth.login(service).then(() => {
-                auth.isLoggedIn(service).then(isLoggedIn => {
-                    if (isLoggedIn) {
-                        console.log("Successfully logged in to " + service);
-                        this.setState({
-                            [service]: isLoggedIn
-                        });
-                        this.fetchOneGraphQuery(GET_GmailId, null, this.callLogin);
-                        this.fetchOneGraphQuery(
-                            GET_Emails,
-                            { pageToken: this.state.pageToken },
-                            this.callStoreEmails
-                        );
+    try {
+      auth.login(service).then(() => {
+        auth.isLoggedIn(service).then(isLoggedIn => {
+          if (isLoggedIn) {
+            console.log("Successfully logged in to " + service);
+            this.setState({
+              [service]: isLoggedIn
+            });
+            this.fetchOneGraphQuery(GET_GmailId, null, this.callLogin);
+            this.fetchOneGraphQuery(
+              GET_Emails,
+              { pageToken: this.state.pageToken },
+              this.callStoreEmails
+            );
           } else {
             console.log("Did not grant auth for service " + service);
             this.setState({
@@ -365,7 +343,7 @@ class App extends Component {
       });
     } catch (e) {
       console.error("Problem logging in", e);
-    }*/
+    }
   }
 
   renderButton(eventTitle, eventClass) {
@@ -383,14 +361,8 @@ class App extends Component {
         <audio ref={ref => (this.rockAudio = ref)} id="rock" allow="autoplay">
           <source src={rockAudio} type="audio/mpeg" />
         </audio>
-        {//this.state.gmail
-        true
-          ? <div>
-              <div className="login-google">
-                {this.renderButton("Gmail", "gmail")}
-              </div>
-              <GetEmails email={this.state.email} rockAudio={this.rockAudio} />
-            </div>
+        {this.state.gmail
+          ? <GetEmails email={this.state.email} rockAudio={this.rockAudio} />
           : <div>
               <div className="App-login">
                 <h1 className="App-title">Welcome to Nuclear-sub</h1>
