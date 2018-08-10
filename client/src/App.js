@@ -230,7 +230,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isNuclear: true,
+      //isNuclear: true,
       gmail: false,
       email: null,
       pageToken: null
