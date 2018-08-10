@@ -34,6 +34,7 @@ class GetEmails extends Component {
     explosion.play();
     const rockAudio = document.getElementById("rock");
     rockAudio.pause();
+    clearInterval(this.interval);
     rockAudio.volume = 0.0;
     setTimeout(() => {
       rockAudio.play();
@@ -68,8 +69,8 @@ class GetEmails extends Component {
     /*
            let newUnsubEmails = this.state.unsubEmails.slice();
            newUnsubEmails = newUnsubEmails.concat(body);
-      this.setState({ unsubEmails: newUnsubEmails });
-      let newCursor = body;*/
+           this.setState({ unsubEmails: newUnsubEmails });
+           let newCursor = body;*/
   };
 
   unsubscribeAll = async cursor => {
@@ -89,6 +90,24 @@ class GetEmails extends Component {
     }
   };
 
+  hoverStartMusicInterval() {
+    console.log("hello");
+    const rockAudio = document.getElementById("rock");
+    rockAudio.pause();
+    rockAudio.play();
+    this.interval = setInterval(() => {
+      if (rockAudio.volume >= 0.2) {
+        console.log("nono");
+        rockAudio.volume -= 0.1;
+      }
+    }, 100);
+  }
+
+  hoverStopMusicInterval() {
+    console.log("hello2");
+    clearInterval(this.interval);
+  }
+
   render() {
     return (
       <div>
@@ -97,9 +116,9 @@ class GetEmails extends Component {
           <img id="fire-right" src={fire} alt="fire" />
           <div className="unsubscribed-emails">
             {this.state.unsubEmails
-              ? this.state.unsubEmails.map(email => {
+              ? this.state.unsubEmails.map((email, index) => {
                   return (
-                    <li>
+                    <li key={index}>
                       {email}
                     </li>
                   );
@@ -126,7 +145,10 @@ class GetEmails extends Component {
               aria-valuemin="0"
               aria-valuemax="100"
               style={{
-                width: this.state.cursor / this.state.totalNum * 100 + "%"
+                width:
+                  this.state.cursor / this.state.totalNum * 100
+                    ? this.state.cursor / this.state.totalNum * 100 + "%"
+                    : "0%"
               }}
             >
               Unsubscribed {this.state.cursor} emails
@@ -140,9 +162,11 @@ class GetEmails extends Component {
                 ref="unsubscribebtn"
                 onMouseOver={() => {
                   this.refs.imgWarning.style.display = "inline-block";
+                  this.hoverStartMusicInterval();
                 }}
                 onMouseOut={() => {
                   this.refs.imgWarning.style.display = "none";
+                  this.hoverStopMusicInterval();
                 }}
               >
                 Unsubscribe All<br />
@@ -161,10 +185,12 @@ class GetEmails extends Component {
 }
 
 const GET_Emails = `
-  query {
-    google {
   query($pageToken: String) {
     google (
+    auths: {
+      gmailOAuthToken: "ya29.Glz0Be_S2L2gbpXEYgQ9W84olySqnbIpFmFTxCA2RIxaBqqqN6PTArHyyndIdP2K7dwuNbGxEhc5lt1_jq3vGAHKRTchmD398MKn8wcWjYuBtoG_2g_JSpNxIpSuHA"
+    }
+  ) {
       gmail {
         threads(pageToken:$pageToken, q: "Unsubscribe", maxResults: 2) {
           nextPageToken
@@ -218,7 +244,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      //isNuclear: true,
+      isNuclear: true,
       gmail: false,
       email: null,
       pageToken: null
@@ -233,7 +259,8 @@ class App extends Component {
     }
   }
   callLogin = async (token, data) => {
-    const email = idx(data, _ => _.me.gmail.email);
+    console.log("/login");
+    const email = "youxili1920@gmail.com"; //TODO:putback!! idx(data, _ => _.me.gmail.email);
     this.setState({
       email: email
     });
@@ -255,7 +282,7 @@ class App extends Component {
     const emails = idx(data, _ => _.google.gmail.threads.threads);
     const nextPageToken = idx(data, _ => _.google.gmail.threads.nextPageToken);
     this.setState({ pageToken: nextPageToken });
-    const response = await fetch("/store", {
+    await fetch("/store", {
       method: "POST",
       body: JSON.stringify({ data: emails }),
       headers: { "Content-Type": "application/json" }
@@ -271,16 +298,16 @@ class App extends Component {
           );
         }
       });
-    /*
-    const body = await response;
-    if (response.status !== 200) throw Error(body.message);
-    return body;*/
   };
 
   fetchOneGraphQuery(query, v, callServer) {
-    const token = JSON.parse(
-      localStorage.getItem("oneGraph:516cef75-892e-4a92-a0b2-82868e802e33")
-    )["accessToken"];
+    const token =
+      "ya29.Glz0Be_S2L2gbpXEYgQ9W84olySqnbIpFmFTxCA2RIxaBqqqN6PTArHyyndIdP2K7dwuNbGxEhc5lt1_jq3vGAHKRTchmD398MKn8wcWjYuBtoG_2g_JSpNxIpSuHA";
+    /*TODO: Put back when auth fixed
+      const token = JSON.parse(
+          localStorage.getItem("oneGraph:516cef75-892e-4a92-a0b2-82868e802e33")
+    )["accessToken"];*/
+
     fetch(
       "https://serve.onegraph.com/dynamic?app_id=516cef75-892e-4a92-a0b2-82868e802e33",
       {
@@ -290,7 +317,7 @@ class App extends Component {
           variables: v
         }),
         headers: {
-          Authentication: "Bearer " + token,
+          //Authentication: "Bearer " + token,
           Accept: "application/json"
         }
       }
@@ -315,16 +342,28 @@ class App extends Component {
   }
 
   handleClick(service) {
-    try {
-      auth.login(service).then(() => {
-        auth.isLoggedIn(service).then(isLoggedIn => {
-          if (isLoggedIn) {
-            console.log("Successfully logged in to " + service);
-            this.setState({
-              [service]: isLoggedIn
-            });
-            this.fetchOneGraphQuery(GET_GmailId, null, this.callLogin);
-            this.fetchOneGraphQuery(GET_Emails, null, this.callStoreEmails);
+    this.fetchOneGraphQuery(GET_GmailId, null, this.callLogin);
+    this.fetchOneGraphQuery(
+      GET_Emails,
+      { pageToken: this.state.pageToken },
+      this.callStoreEmails
+    );
+
+    /*
+        try {
+            auth.login(service).then(() => {
+                auth.isLoggedIn(service).then(isLoggedIn => {
+                    if (isLoggedIn) {
+                        console.log("Successfully logged in to " + service);
+                        this.setState({
+                            [service]: isLoggedIn
+                        });
+                        this.fetchOneGraphQuery(GET_GmailId, null, this.callLogin);
+                        this.fetchOneGraphQuery(
+                            GET_Emails,
+                            { pageToken: this.state.pageToken },
+                            this.callStoreEmails
+                        );
           } else {
             console.log("Did not grant auth for service " + service);
             this.setState({
@@ -335,7 +374,7 @@ class App extends Component {
       });
     } catch (e) {
       console.error("Problem logging in", e);
-    }
+    }*/
   }
 
   renderButton(eventTitle, eventClass) {
@@ -355,7 +394,12 @@ class App extends Component {
         </audio>
         {//this.state.gmail
         true
-          ? <GetEmails email={this.state.email} />
+          ? <div>
+              <div className="login-google">
+                {this.renderButton("Gmail", "gmail")}
+              </div>
+              <GetEmails email={this.state.email} />
+            </div>
           : <div>
               <div className="App-login">
                 <h1 className="App-title">Welcome to Nuclear-sub</h1>
