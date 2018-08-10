@@ -38,14 +38,12 @@ app.post("/store", (req, res) => {
     const sqlValues = values.join(", ");
     const sql = escape("INSERT INTO emails values %s", sqlValues);
     client.query(sql, (error, response) => {
-      console.log(error, response);
       res.send(response);
     });
   }
 });
 
 app.post("/login", (req, res) => {
-  console.log("/login here");
   const token = req.body.token;
   const email = req.body.email;
   const sql = escape(
@@ -57,14 +55,11 @@ app.post("/login", (req, res) => {
     email
   );
   client.query(sql, (error, response) => {
-    console.log(error, response);
     res.send(response);
   });
 });
 
 app.post("/unsubscribe", async (req, res) => {
-  console.log("/unsubscribe here");
-  let isFinished = false;
   let emailReturnList = [];
   async function unsubscribe() {
     const sql = escape(
@@ -97,12 +92,11 @@ app.post("/unsubscribe", async (req, res) => {
 });
 
 app.get("/status", async (req, res) => {
-  console.log("/status here");
   let allEmails = 0;
   let count = 0;
   const sqlAllEmails = "SELECT count(*) FROM emails";
-  const allEmailsRes = await client.query(sqlAllEmails);
   try {
+    const allEmailsRes = await client.query(sqlAllEmails);
     allEmails = allEmailsRes.rows[0].count;
   } catch (allEmailsRes) {
     console.error("Failed to get data from DB:" + allEmailsRes);
