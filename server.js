@@ -9,8 +9,7 @@ const { Client } = require("pg");
 const escape = require("pg-escape");
 const fetch = require("node-fetch");
 
-const connectionString =
-  "postgres://someuser:somepassword@somehost:381/somedatabase";
+const connectionString = process.env.DATABASE_URL;
 
 const client = new Client({ connectionString: connectionString });
 client.connect();
