@@ -34,7 +34,13 @@
 .pointer {
   width: 100%;
 }
-
+.curtain {
+  position: absolute;
+  bottom: 0px;
+  background-color: yellow;
+  height: 50px;
+  width: 100%;
+}
 .card-footer {
   position: fixed;
   bottom: 0px;
@@ -66,5 +72,28 @@
   background-attachment: fixed;
   background-position: center center;
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: auto;
+  background-color: black;
+}
+@media screen and (max-width: 768px) {
+  .main-content .main-image img {
+    width: 100%;
+    height: auto;
+  }
+  .main-image {
+    margin-top: 50px;
+  }
+  .scroll-up {
+    flex-wrap: wrap;
+  }
+  .scroll-up p {
+    font-size: 1.5rem;
+  }
+  .scroll {
+    height: 300px;
+  }
+  .parallax {
+    background-repeat: repeat;
+    background-size: contain;
+  }
 }
