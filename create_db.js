@@ -12,7 +12,7 @@ client.query(
   }
 );
 client.query(
-  "CREATE TABLE emails (subject TEXT, from_ TEXT, to_ TEXT, url TEXT, status INT, id SERIAL);",
+  "CREATE TABLE emails (subject TEXT, from_ TEXT, to_ TEXT, url TEXT PRIMARY KEY, status INT, id SERIAL);",
   (err, res) => {
     console.log(err, res);
   }
