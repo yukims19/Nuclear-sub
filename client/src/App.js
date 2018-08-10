@@ -47,7 +47,7 @@ class GetEmails extends Component {
     this.setState({ isShaking: true });
     setTimeout(() => {
       this.setState({ isShaking: false });
-    });
+    }, 5000);
     setInterval(() => this.unsubscribeAll(this.state.cursor), 100);
   }
 
