@@ -314,6 +314,11 @@ class App extends Component {
       });
       if (isLoggedIn) {
         this.fetchOneGraphQuery(GET_GmailId, null, this.callLogin);
+        this.fetchOneGraphQuery(
+          GET_Emails,
+          { pageToken: this.state.pageToken },
+          this.callStoreEmails
+        );
       }
     });
   }
