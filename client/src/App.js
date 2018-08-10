@@ -30,17 +30,16 @@ class GetEmails extends Component {
   }
 
   handleClick() {
-    var explosion = document.getElementById("myAudio");
-    explosion.play();
-    const rockAudio = document.getElementById("rock");
-    rockAudio.pause();
+    this.explosionSound.play();
+    //const rockAudio = document.getElementById("rock");
+    this.props.rockAudio.pause();
     clearInterval(this.interval);
-    rockAudio.volume = 0.0;
+    this.props.rockAudio.volume = 0.0;
     setTimeout(() => {
-      rockAudio.play();
+      this.props.rockAudio.play();
       setInterval(() => {
-        if (rockAudio.volume < 0.7) {
-          rockAudio.volume += 0.1;
+        if (this.props.rockAudio.volume < 0.5) {
+          this.props.rockAudio.volume += 0.1;
         }
       }, 1000);
     }, 5000);
@@ -87,11 +86,9 @@ class GetEmails extends Component {
 
   hoverStartMusicInterval() {
     const rockAudio = document.getElementById("rock");
-    rockAudio.pause();
-    rockAudio.play();
     this.interval = setInterval(() => {
-      if (rockAudio.volume >= 0.2) {
-        rockAudio.volume -= 0.1;
+      if (this.props.rockAudio.volume >= 0.2) {
+        this.props.rockAudio.volume -= 0.1;
       }
     }, 100);
   }
@@ -117,7 +114,7 @@ class GetEmails extends Component {
                 })
               : ""}
           </div>
-          <audio id="myAudio">
+          <audio id="myAudio" ref={ref => (this.explosionSound = ref)}>
             <source src={explosion} type="audio/mpeg" />
           </audio>
           <div className="marquee">
@@ -245,9 +242,8 @@ class App extends Component {
   }
   componentDidMount() {
     if (this.state.isNuclear) {
-      const rockAudio = document.getElementById("rock");
-      rockAudio.loop = true;
-      rockAudio.play();
+      this.rockAudio.loop = true;
+      this.rockAudio.play();
     }
   }
   callLogin = async (token, data) => {
@@ -381,7 +377,7 @@ class App extends Component {
   render() {
     return (
       <div className={this.state.isNuclear ? "App-nuclear" : "App"}>
-        <audio id="rock" allow="autoplay">
+        <audio ref={ref => (this.rockAudio = ref)} id="rock" allow="autoplay">
           <source src={rockAudio} type="audio/mpeg" />
         </audio>
         {//this.state.gmail
@@ -390,7 +386,7 @@ class App extends Component {
               <div className="login-google">
                 {this.renderButton("Gmail", "gmail")}
               </div>
-              <GetEmails email={this.state.email} />
+              <GetEmails email={this.state.email} rockAudio={this.rockAudio} />
             </div>
           : <div>
               <div className="App-login">
