@@ -15,9 +15,8 @@ const client = new Client({ connectionString: connectionString });
 client.connect();
 
 app.post("/store", (req, res) => {
-  console.log("/store here");
   const data = req.body.data;
-  let values = [];
+  const values = [];
   if (!data) {
     res.send({ error: "No Data Found" });
   } else {
