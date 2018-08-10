@@ -8,6 +8,7 @@ const port = process.env.PORT || 5000;
 const { Client } = require("pg");
 const escape = require("pg-escape");
 const fetch = require("node-fetch");
+const idx = require("idx");
 
 const connectionString = process.env.DATABASE_URL;
 
@@ -74,6 +75,37 @@ app.post("/unsubscribe", async (req, res) => {
       "SELECT id, url FROM emails WHERE status IS NULL limit 5;"
     );
     const emailsRes = await client.query(sql);
+    try {
+      const resData = emailsRes.rows;
+      (async function loop() {
+        for (let i = 0; i < resData.length; i++) {
+          emailReturnList.push(resData[i].url);
+          fetch(resData[i].url)
+            .then(response => console.log(response.status))
+            .catch(error => console.log(error));
+          const sqlStatus = escape(
+            "UPDATE emails SET status = 1 WHERE id = '%s'",
+            resData[i].id
+          );
+          client
+            .query(sqlStatus)
+            .then(response => console.log(response))
+            .catch(error => console.log(error));
+        }
+      })();
+    } catch (emailsRes) {
+      console.error(emailsRes);
+    }
+  }
+  unsubscribe().then(() => res.send({ unsubscribedEmails: emailReturnList }));
+
+  /*
+  let emailReturnList = [];
+  async function unsubscribe() {
+    const sql = escape(
+      "SELECT id, url FROM emails WHERE status IS NULL limit 5;"
+    );
+    const emailsRes = await client.query(sql);
     const resData = emailsRes.rows;
 
     await Promise.all(
@@ -92,7 +124,7 @@ app.post("/unsubscribe", async (req, res) => {
       })
     );
   }
-  unsubscribe().then(() => res.send({ unsubscribedEmails: emailReturnList }));
+  unsubscribe().then(() => res.send({ unsubscribedEmails: emailReturnList }));*/
 });
 
 app.get("/status", async (req, res) => {
