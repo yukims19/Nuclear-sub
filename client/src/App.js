@@ -18,7 +18,8 @@ class GetEmails extends Component {
     this.state = {
       totalNum: 0,
       cursor: 0,
-      unsubEmails: []
+      unsubEmails: [],
+      isShaking: false
     };
   }
   componentDidMount() {
@@ -44,14 +45,10 @@ class GetEmails extends Component {
       }, 1000);
     }, 5000);
 
-    document
-      .getElementsByClassName("App-main")[0]
-      .classList.add("shake-hard", "shake-constant");
+    this.setState({ isShaking: true });
     setTimeout(() => {
-      document
-        .getElementsByClassName("App-main")[0]
-        .classList.remove("shake-hard", "shake-constant");
-    }, 4000);
+      this.setState({ isShaking: false });
+    });
     setInterval(() => this.unsubscribeAll(this.state.cursor), 100);
     //this.unsubscribeAll(this.state.cursor);
   }
@@ -100,7 +97,13 @@ class GetEmails extends Component {
   render() {
     return (
       <div>
-        <header className="App-main">
+        <header
+          className={
+            this.state.isShaking
+              ? "App-main shake-hard shake-constant"
+              : "App-main"
+          }
+        >
           <img id="fire-left" src={fire} alt="fire" />
           <img id="fire-right" src={fire} alt="fire" />
           <div className="unsubscribed-emails">
