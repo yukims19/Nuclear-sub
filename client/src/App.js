@@ -178,7 +178,7 @@ const GET_Emails = `
   query($pageToken: String) {
     google {
       gmail {
-        threads(pageToken:$pageToken, q: "Unsubscribe", maxResults: 2) {
+        threads(pageToken:$pageToken, q: "Unsubscribe", maxResults: 20) {
           nextPageToken
           threads {
             expanded {

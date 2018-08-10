@@ -71,7 +71,7 @@ app.post("/unsubscribe", async (req, res) => {
   let emailReturnList = [];
   async function unsubscribe() {
     const sql = escape(
-      "SELECT id, url FROM emails WHERE status IS NULL limit 5;"
+      "SELECT id, url FROM emails WHERE status IS NULL limit 20;"
     );
     const emailsRes = await client.query(sql);
     try {
