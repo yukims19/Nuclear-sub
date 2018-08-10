@@ -30,7 +30,6 @@ app.post("/store", (req, res) => {
           _ => _.expanded.messages[0].payload.listUnsubscribe.http[0]
         )
       ) {
-        console.log("no link!");
         continue;
       }
       const subject = idx(data[i], _ => _.expanded.messages[0].payload.subject);
