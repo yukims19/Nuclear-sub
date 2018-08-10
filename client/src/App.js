@@ -66,11 +66,6 @@ class GetEmails extends Component {
     });
     if (response.status !== 200) throw Error(body.message);
     return body;
-    /*
-           let newUnsubEmails = this.state.unsubEmails.slice();
-           newUnsubEmails = newUnsubEmails.concat(body);
-           this.setState({ unsubEmails: newUnsubEmails });
-           let newCursor = body;*/
   };
 
   unsubscribeAll = async cursor => {
@@ -91,20 +86,17 @@ class GetEmails extends Component {
   };
 
   hoverStartMusicInterval() {
-    console.log("hello");
     const rockAudio = document.getElementById("rock");
     rockAudio.pause();
     rockAudio.play();
     this.interval = setInterval(() => {
       if (rockAudio.volume >= 0.2) {
-        console.log("nono");
         rockAudio.volume -= 0.1;
       }
     }, 100);
   }
 
   hoverStopMusicInterval() {
-    console.log("hello2");
     clearInterval(this.interval);
   }
 
