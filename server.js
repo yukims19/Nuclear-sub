@@ -66,27 +66,23 @@ app.post("/unsubscribe", async (req, res) => {
       "SELECT id, url FROM emails WHERE status IS NULL limit 5;"
     );
     const emailsRes = await client.query(sql);
-    try {
-      const resData = emailsRes.rows;
-      (async function loop() {
-        for (let i = 0; i < resData.length; i++) {
-          emailReturnList.push(resData[i].url);
-          fetch(resData[i].url)
-            .then(response => console.log(response.status))
-            .catch(error => console.log(error));
+    const resData = emailsRes.rows;
+
+    await Promise.all(
+      resData.map(async data => {
+        try {
+          await fetch(data.url);
+          emailReturnList.push(data.url);
           const sqlStatus = escape(
             "UPDATE emails SET status = 1 WHERE id = '%s'",
-            resData[i].id
+            data.id
           );
-          client
-            .query(sqlStatus)
-            .then(response => console.log(response))
-            .catch(error => console.log(error));
+          await client.query(sqlStatus);
+        } catch (e) {
+          console.error(e);
         }
-      })();
-    } catch (emailsRes) {
-      console.error(emailsRes);
-    }
+      })
+    );
   }
   unsubscribe().then(() => res.send({ unsubscribedEmails: emailReturnList }));
 });
